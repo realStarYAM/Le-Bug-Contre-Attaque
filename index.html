@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Le Bug Contre-Attaque</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#5D5CDE',
+            secondary: '#2D2D2D',
+            accent: '#FF5733',
+          },
+          fontFamily: {
+            comic: ['Bangers', 'cursive'],
+            sans: ['Poppins', 'sans-serif']
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Animation de transition des pages */
+    .page-transition {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    
+    .page-enter {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    
+    /* Personnalisation du défilement */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    
+    .dark ::-webkit-scrollbar-track {
+      background: #2d2d2d;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #5D5CDE;
+    }
+    
+    /* Style pour le séparateur */
+    .separator {
+      position: relative;
+      height: 1px;
+      width: 100%;
+      margin: 16px 0;
+      background-color: #e0e0e0;
+    }
+    
+    .dark .separator {
+      background-color: #4a4a4a;
+    }
+  </style>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen font-sans transition-colors duration-300">
+  <!-- Header -->
+  <header class="bg-primary text-white p-4 shadow-md">
+    <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+      <h1 class="font-comic text-3xl md:text-4xl">Le Bug Contre-Attaque</h1>
+      <div class="flex items-center mt-3 md:mt-0">
+        <button id="profile-btn" class="flex items-center px-4 py-2 mr-2 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition-all">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          Profil
+        </button>
+        <button id="theme-toggle" class="bg-white bg-opacity-20 p-2 rounded-lg hover:bg-opacity-30 transition-all">
+          <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+          <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container mx-auto p-4 flex flex-col md:flex-row gap-6">
+    <!-- Sidebar -->
+    <aside class="md:w-1/4 lg:w-1/5 mb-6 md:mb-0">
+      <div class="bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md p-4">
+        <h2 class="font-comic text-xl text-primary border-b pb-2 mb-4 dark:border-gray-700">Chapitres</h2>
+        <ul id="chapter-list" class="space-y-2">
+          <!-- Les chapitres seront ajoutés dynamiquement ici -->
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Content Area -->
+    <div class="flex-1">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+        <!-- Chapter Title -->
+        <div class="bg-primary text-white p-4">
+          <h2 id="current-chapter-title" class="font-comic text-2xl">Chargement...</h2>
+        </div>
+        
+        <!-- Comic Content -->
+        <div class="p-4 md:p-6">
+          <!-- Page navigation -->
+          <div class="flex justify-between mb-4">
+            <button id="prev-page" class="bg-primary text-white px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed">
+              Précédent
+            </button>
+            <div>
+              <span id="current-page">1</span> / <span id="total-pages">?</span>
+            </div>
+            <button id="next-page" class="bg-primary text-white px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed">
+              Suivant
+            </button>
+          </div>
+          
+          <!-- Page Content -->
+          <div id="page-content" class="bg-gray-50 dark:bg-gray-700 p-4 md:p-6 rounded-lg page-transition min-h-[50vh]">
+            <h3 id="page-title" class="font-comic text-xl text-primary mb-4">Chargement...</h3>
+            <div id="page-text" class="space-y-4">
+              <!-- Le contenu de la page s'affichera ici -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Profile Modal -->
+  <div id="profile-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="font-comic text-2xl text-primary">Profil</h2>
+        <button id="close-profile" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="flex flex-col items-center">
+        <div class="w-24 h-24 bg-primary rounded-full flex items-center justify-center text-white text-4xl font-bold mb-4">
+          A
+        </div>
+        <h3 class="text-xl font-semibold mb-1">Acer</h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">Protagoniste malheureux</p>
+        <div class="separator"></div>
+        <div class="w-full">
+          <h4 class="font-semibold mb-2">À propos</h4>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Acer est une marque d'ordinateurs constamment humiliée par ses concurrents. Malgré ses efforts, il enchaîne les échecs et les humiliations.
+          </p>
+          <div class="separator"></div>
+          <div class="flex flex-wrap justify-between">
+            <div class="mb-4">
+              <h4 class="font-semibold mb-1">Forces</h4>
+              <ul class="list-disc list-inside text-gray-600 dark:text-gray-400">
+                <li>Persévérance</li>
+                <li>Optimisme</li>
+              </ul>
+            </div>
+            <div class="mb-4">
+              <h4 class="font-semibold mb-1">Faiblesses</h4>
+              <ul class="list-disc list-inside text-gray-600 dark:text-gray-400">
+                <li>Qualité douteuse</li>
+                <li>BIOS buggé</li>
+                <li>Pâte thermique en dentifrice</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Détection du mode sombre
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.classList.add('dark');
+      document.getElementById('moon-icon').classList.add('hidden');
+      document.getElementById('sun-icon').classList.remove('hidden');
+    }
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+      if (event.matches) {
+        document.documentElement.classList.add('dark');
+        document.getElementById('moon-icon').classList.add('hidden');
+        document.getElementById('sun-icon').classList.remove('hidden');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.getElementById('moon-icon').classList.remove('hidden');
+        document.getElementById('sun-icon').classList.add('hidden');
+      }
+    });
+
+    // Données du livre
+    const bookData = {
+      title: "SAISON 2 -- Le Bug Contre-Attaque",
+      chapters: [
+        {
+          id: 1,
+          title: "Chapitre 1 : Acer tente sa chance chez TopAchat",
+          pages: [
+            {
+              id: 1,
+              title: "La quête du renouveau",
+              content: [
+                "Après avoir été humilié par toutes les marques…",
+                "Acer décide de se refaire une réputation.",
+                "",
+                "Acer (motivé) :",
+                "« Je vais aller chez TopAchat ! Ils vont me respecter ! »",
+                "",
+                "Il met une cravate, un SSD de 128 Go, et part en mission…"
+              ]
+            },
+            {
+              id: 2,
+              title: "Le refus monumental",
+              content: [
+                "Chez TopAchat, le staff vérifie son dossier…",
+                "",
+                "Staff TopAchat :",
+                "« Euh… excusez-moi… votre BIOS date de 2010 ?! »",
+                "« Et votre pâte thermique… c'est du dentifrice ?! »",
+                "",
+                "TopAchat (ensemble, en choeur) :",
+                "« REFUSÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉ !!! »"
+              ]
+            },
+            {
+              id: 3,
+              title: "L'humiliation mondiale",
+              content: [
+                "Les marques du monde entier reçoivent l'info…",
+                "",
+                "ASUS, MSI, Gigabyte, HP, Lenovo, Dell, Samsung :",
+                "« BAHAHAHAHAHAHAHA ! MEME TOPACHAT NE VEUT PAS DE TOI ! »",
+                "",
+                "Rodrigue :",
+                "« Ils lui ont même pas laissé rentrer dans le panier ! »",
+                "",
+                "Adel :",
+                "« Acer t'es même pas en stock… t'es en rupture de crédibilité. »"
+              ]
+            },
+            {
+              id: 4,
+              title: "Acer, seul dans la pluie numérique",
+              content: [
+                "Acer (tête basse, logo tout flou) :",
+                "« Snif… même TopAchat… pourquoi tout le monde me déteste… »",
+                "",
+                "Il s'en va lentement, fond triste, clavier qui goutte…"
+              ]
+            }
+          ]
+        },
+        {
+          id: 2,
+          title: "Chapitre 2 : Rencontre au cimetière des PC oubliés",
+          pages: [
+            {
+              id: 1,
+              title: "Un lieu sombre…",
+              content: [
+                "Acer, triste et rejeté par TopAchat, marche seul…",
+                "Il entend une voix venue d'un vieux disque dur IDE…",
+                "",
+                "Packard Bell (tout poussiéreux, avec un écran CRT sur la tête) :",
+                "« Bonjour Acer, ça va ? »"
+              ]
+            },
+            {
+              id: 2,
+              title: "La réponse sèche",
+              content: [
+                "Acer (yeux rouges, plein de bugs) :",
+                "« NON. »",
+                "",
+                "Packard Bell (surpris) :",
+                "« Euh… pourquoi ? »"
+              ]
+            },
+            {
+              id: 3,
+              title: "Le flashback de la honte",
+              content: [
+                "Acer (raconte) :",
+                "« ASUS m'a pissé dessus… HP aussi… Lenovo… Dell… Samsung m'a hurlé dessus…",
+                "Même TopAchat m'a dit 'dégage'… »",
+                "",
+                "Packard Bell :",
+                "« Ah ouais… t'as pris tout le catalogue de la honte ! »"
+              ]
+            },
+            {
+              id: 4,
+              title: "L'espoir improbable",
+              content: [
+                "Packard Bell :",
+                "« Frérot, t'as touché le fond. Mais moi, je suis encore plus bas ! »",
+                "",
+                "Acer (curieux) :",
+                "« Sérieux ? »",
+                "",
+                "Packard Bell :",
+                "« Oui… moi j'existe même plus. T'es pas encore mort, t'as une chance ! »"
+              ]
+            }
+          ]
+        },
+        {
+          id: 3,
+          title: "Chapitre 3 : La honte chez LDLC",
+          pages: [
+            {
+              id: 1,
+              title: "Dernier espoir",
+              content: [
+                "Après avoir été rejeté par TopAchat,",
+                "Acer se dit :",
+                "« Bon… il me reste LDLC, eux ils sont français… ils vont m'aimer, non ? »",
+                "",
+                "Il arrive avec un vieux portable Aspire rouillé, écran 720p et HDD qui gratte…"
+              ]
+            },
+            {
+              id: 2,
+              title: "La sentence tombe",
+              content: [
+                "Le vendeur de LDLC regarde la fiche technique de l'Acer…",
+                "",
+                "LDLC :",
+                "« Hmm… 4 Go de RAM soudés… écran TN… BIOS UEFI bugué… »",
+                "",
+                "Il prend une grande respiration et dit calmement :",
+                "",
+                "LDLC :",
+                "« REFUSÉ. Acer, c'est aussi mauvais que Packard Bell. »"
+              ]
+            },
+            {
+              id: 3,
+              title: "Le coup de grâce",
+              content: [
+                "Acer (sous le choc) :",
+                "« QUOI ?! COMME PACKARD BELL ??? »",
+                "",
+                "LDLC :",
+                "« Oui monsieur. Même catégorie : musée de la déprime technologique. »"
+              ]
+            },
+            {
+              id: 4,
+              title: "Rejet mondial (encore une fois)",
+              content: [
+                "ASUS, MSI, Gigabyte, HP, Lenovo, Dell, Samsung, TopAchat, Packard Bell, Adel et Rodrigue (ensemble) :",
+                "« BAHAHAHAHAHAHA ! MÊME LDLC TE COMPLÈTE LE DOSSIER DE LA HONTE !!! »",
+                "",
+                "Rodrigue :",
+                "« Il va finir chez Noz ! »",
+                "",
+                "Adel :",
+                "« Ou en pièce détachée sur Leboncoin… 15€ négociable. »"
+              ]
+            }
+          ]
+        },
+        {
+          id: 4,
+          title: "Chapitre 4 : Acer-Shop.fr -- Le flop de l'année",
+          pages: [
+            {
+              id: 1,
+              title: "Le plan désespéré",
+              content: [
+                "Après avoir été rejeté par TopAchat, LDLC, et humilié par tout le monde…",
+                "",
+                "Acer lance son propre site web :",
+                "\"www.Acer-Shop.fr\"",
+                "",
+                "Avec Packard Bell en partenariat :",
+                "\"Achetez pas cher, bug garanti\"",
+                "",
+                "Acer :",
+                "« Ça y est, c'est notre moment de gloire. »",
+                "",
+                "Packard Bell :",
+                "« J'ai ressorti mon Pentium III pour gérer les serveurs ! »"
+              ]
+            },
+            {
+              id: 2,
+              title: "Le silence total",
+              content: [
+                "Le site ouvre…",
+                "0 visiteurs…",
+                "0 clics…",
+                "0 ventes…",
+                "",
+                "Packard Bell :",
+                "« C'est normal ? Ou faut redémarrer le modem 56k ? »"
+              ]
+            },
+            {
+              id: 3,
+              title: "Le monde entier s'en fout",
+              content: [
+                "Tout le monde tech (ASUS, MSI, HP, Lenovo, Dell, Samsung, TopAchat, LDLC, Amazon, même AliExpress) :",
+                "« MDRRRRR jamais on achète là-dessus ! »",
+                "",
+                "Rodrigue :",
+                "« Même Wish refuse de les afficher ! »",
+                "",
+                "Adel :",
+                "« Même les bots de test veulent pas y aller, ça fait peur ! »"
+              ]
+            },
+            {
+              id: 4,
+              title: "L'humiliation finale",
+              content: [
+                "Acer (très triste, sur un fond gris sans RGB) :",
+                "« pffffffffffff… »",
+                "",
+                "Packard Bell (le console) :",
+                "« Moi je suis habitué t'inquiète. »"
+              ]
+            }
+          ]
+        },
+        {
+          id: 5,
+          title: "Chapitre 5 : Le scandale YouTube",
+          pages: [
+            {
+              id: 1,
+              title: "La grande idée",
+              content: [
+                "Acer, au bord de la faillite avec son site Acer-Shop.fr, tente un dernier coup…",
+                "",
+                "Acer (motivé) :",
+                "« Je vais faire une PUB YOUTUBE ! RGB, musique épique, processeur bridé et tout ! »",
+                "",
+                "Il balance 3000€ dans une pub vidéo intitulée :",
+                "\"Acer, le futur du bug maîtrisé\""
+              ]
+            },
+            {
+              id: 2,
+              title: "L'explosion de vues",
+              content: [
+                "BOUM !",
+                "3 MILLIONS DE VUES en 24h !",
+                "",
+                "Acer (fier) :",
+                "« C'est mon moment ! Je suis enfin respecté ! »"
+              ]
+            },
+            {
+              id: 3,
+              title: "Les commentaires arrivent… et c'est le drame",
+              content: [
+                "• @GamerDu93 : « Acer c'est de la merde en plastique ! »",
+                "• @TrollProRGB : « Le futur du bug, ça oui ! »",
+                "• @MamieTech : « J'ai cliqué par erreur. Je veux désinstaller cette pub. »",
+                "",
+                "Monde entier en commentaires :",
+                "« ACER C'EST DE LA MERDE !!! »"
+              ]
+            },
+            {
+              id: 4,
+              title: "La chute encore une fois",
+              content: [
+                "Acer (choqué, les yeux grands ouverts) :",
+                "« Hein ? Hein ? PFFFFFFFFFFFFFFFFF !!!! »",
+                "",
+                "Packard Bell (en train de pleurer de rire) :",
+                "« T'as payé 3000€ pour 3 millions d'insultes ! »"
+              ]
+            }
+          ]
+        },
+        {
+          id: 6,
+          title: "Chapitre 6 : TikTok bannit Acer",
+          pages: [
+            {
+              id: 1,
+              title: "Nouvelle tentative",
+              content: [
+                "Après la catastrophe de YouTube, Acer se dit :",
+                "",
+                "Acer :",
+                "« Bon… YouTube c'est trop méchant. Je vais aller sur TikTok ! Là-bas ils aiment tout, même les toasters qui dansent. »",
+                "",
+                "Il crée un compte :",
+                "@Acer_Le_Retour",
+                "",
+                "Premier TikTok :",
+                "Un laptop Acer qui clignote, avec une voix :",
+                "« Nouveau Acer, 2h d'autonomie, 15h de bugs, garanti sans respect. »"
+              ]
+            },
+            {
+              id: 2,
+              title: "500 000 vues en 3h",
+              content: [
+                "Acer (excité) :",
+                "« Waaa j'ai percé ! Je vais devenir influenceur tech ! »"
+              ]
+            },
+            {
+              id: 3,
+              title: "Le bannissement express",
+              content: [
+                "Notification TikTok :",
+                "\"Votre compte @Acer_Le_Retour a été supprimé pour contenu mensonger et danger pour la santé mentale.\"",
+                "",
+                "Acer (en criant) :",
+                "« HEINNNNNNN ???!!! QUOIIIIII ???!!! »"
+              ]
+            },
+            {
+              id: 4,
+              title: "Le monde en fou rire",
+              content: [
+                "ASUS, MSI, Gigabyte, HP, Dell, Lenovo, Samsung, Packard Bell, Adel et Rodrigue (en choeur) :",
+                "« AHAHAHAHAHAHAHAH ! MÊME TIKTOK L'A JETÉÉÉÉÉÉÉÉÉ !!! »",
+                "",
+                "Rodrigue :",
+                "« Il est banni même des applis gratuites mdrrrr »",
+                "",
+                "Adel :",
+                "« Acer va finir sur LinkedIn avec Packard Bell, les deux seuls rejetés du siècle. »"
+              ]
+            },
+            {
+              id: 5,
+              title: "La tristesse totale",
+              content: [
+                "Acer (à genoux, dans l'ombre) :",
+                "« J'suis maudit… pfffffffffffff… »"
+              ]
+            }
+          ]
+        },
+        {
+          id: 7,
+          title: "Chapitre 7 : Le silence total",
+          pages: [
+            {
+              id: 1,
+              title: "Le dernier espoir",
+              content: [
+                "Acer, après avoir été banni de TikTok, viré de YouTube, rejeté par LDLC, TopAchat, et humilié par tout le monde…",
+                "",
+                "Il décide de tenter des réseaux \"alternatifs\".",
+                "",
+                "Acer :",
+                "« Je vais aller sur Mastodon… ou Telegram ! Les geeks vont m'aimer là-bas… non ? »"
+              ]
+            },
+            {
+              id: 2,
+              title: "Silence glacial",
+              content: [
+                "Il crée un compte sur Mastodon :",
+                "@AcerLeBug@mastodon.bzz",
+                "",
+                "Et une chaîne Telegram :",
+                "\"Acer Deals -- promos pas chères qui chauffent fort\"",
+                "",
+                "Résultat après 1 semaine :",
+                "• Mastodon : 0 followers",
+                "• Telegram : 0 abonnés",
+                "• Aucun message",
+                "• Même les bots ont quitté"
+              ]
+            },
+            {
+              id: 3,
+              title: "L'indifférence mondiale",
+              content: [
+                "Le monde entier (en mode calme, sans même rire cette fois) :",
+                "« … »",
+                "Personne ne répond, personne ne commente, personne ne regarde."
+              ]
+            },
+            {
+              id: 4,
+              title: "Le bug final",
+              content: [
+                "Acer (regarde son écran seul, vide, triste) :",
+                "« … pfffffff »",
+                "",
+                "Packard Bell (arrive avec un café) :",
+                "« Bienvenue dans ma vie. »",
+                "",
+                "FIN DE LA SAISON 2"
+              ]
+            }
+          ]
+        }
+      ]
+    };
+
+    // Variables pour suivre l'état actuel
+    let currentChapter = 0;
+    let currentPage = 0;
+
+    // Fonction pour afficher la page actuelle
+    function renderPage() {
+      const chapter = bookData.chapters[currentChapter];
+      const page = chapter.pages[currentPage];
+      
+      // Mettre à jour le titre du chapitre
+      document.getElementById('current-chapter-title').textContent = chapter.title;
+      
+      // Mettre à jour les numéros de page
+      document.getElementById('current-page').textContent = currentPage + 1;
+      document.getElementById('total-pages').textContent = chapter.pages.length;
+      
+      // Ajouter une animation de transition
+      const pageContent = document.getElementById('page-content');
+      pageContent.classList.add('page-enter');
+      
+      // Mettre à jour le titre et le contenu de la page
+      document.getElementById('page-title').textContent = page.title;
+      
+      // Effacer le contenu précédent
+      const pageTextElement = document.getElementById('page-text');
+      pageTextElement.innerHTML = '';
+      
+      // Ajouter le nouveau contenu
+      page.content.forEach(line => {
+        const paragraph = document.createElement('p');
+        paragraph.textContent = line;
+        // Si la ligne est vide, ajuster la hauteur pour créer un espace
+        if (line === '') {
+          paragraph.style.height = '1rem';
+        }
+        pageTextElement.appendChild(paragraph);
+      });
+      
+      // Mettre à jour l'état des boutons précédent/suivant
+      document.getElementById('prev-page').disabled = currentPage === 0 && currentChapter === 0;
+      document.getElementById('next-page').disabled = 
+        currentPage === chapter.pages.length - 1 && currentChapter === bookData.chapters.length - 1;
+      
+      // Retirer l'animation après un court délai
+      setTimeout(() => {
+        pageContent.classList.remove('page-enter');
+      }, 50);
+    }
+
+    // Fonction pour passer à la page précédente
+    function goToPrevPage() {
+      if (currentPage > 0) {
+        currentPage--;
+      } else if (currentChapter > 0) {
+        currentChapter--;
+        currentPage = bookData.chapters[currentChapter].pages.length - 1;
+      }
+      renderPage();
+    }
+
+    // Fonction pour passer à la page suivante
+    function goToNextPage() {
+      const currentChapterData = bookData.chapters[currentChapter];
+      if (currentPage < currentChapterData.pages.length - 1) {
+        currentPage++;
+      } else if (currentChapter < bookData.chapters.length - 1) {
+        currentChapter++;
+        currentPage = 0;
+      }
+      renderPage();
+    }
+
+    // Fonction pour charger un chapitre spécifique
+    function loadChapter(chapterIndex) {
+      currentChapter = chapterIndex;
+      currentPage = 0;
+      renderPage();
+    }
+
+    // Initialiser la liste des chapitres
+    function initChapterList() {
+      const chapterList = document.getElementById('chapter-list');
+      bookData.chapters.forEach((chapter, index) => {
+        const listItem = document.createElement('li');
+        const button = document.createElement('button');
+        button.textContent = chapter.title;
+        button.className = 'w-full text-left py-2 px-3 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors';
+        button.addEventListener('click', () => loadChapter(index));
+        listItem.appendChild(button);
+        chapterList.appendChild(listItem);
+      });
+    }
+
+    // Gérer les événements de clic sur les boutons précédent/suivant
+    document.getElementById('prev-page').addEventListener('click', goToPrevPage);
+    document.getElementById('next-page').addEventListener('click', goToNextPage);
+    
+    // Gérer le basculement du thème
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      document.getElementById('moon-icon').classList.toggle('hidden');
+      document.getElementById('sun-icon').classList.toggle('hidden');
+    });
+
+    // Gérer le modal du profil
+    document.getElementById('profile-btn').addEventListener('click', () => {
+      document.getElementById('profile-modal').classList.remove('hidden');
+    });
+    
+    document.getElementById('close-profile').addEventListener('click', () => {
+      document.getElementById('profile-modal').classList.add('hidden');
+    });
+    
+    // Fermer le modal du profil en cliquant à l'extérieur
+    document.getElementById('profile-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('profile-modal')) {
+        document.getElementById('profile-modal').classList.add('hidden');
+      }
+    });
+
+    // Ajouter des raccourcis clavier pour la navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        if (!document.getElementById('next-page').disabled) {
+          goToNextPage();
+        }
+      } else if (e.key === 'ArrowLeft') {
+        if (!document.getElementById('prev-page').disabled) {
+          goToPrevPage();
+        }
+      }
+    });
+
+    // Initialiser l'application
+    window.addEventListener('DOMContentLoaded', () => {
+      initChapterList();
+      renderPage();
+    });
+  </script>
+</body>
+</html>
