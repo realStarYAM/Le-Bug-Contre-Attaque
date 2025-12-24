@@ -518,6 +518,42 @@
             border: 1px solid rgba(255, 204, 0, 0.3);
         }
 
+        /* Audio Player */
+        .audio-player {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.5rem;
+            background: rgba(0, 0, 0, 0.55);
+            border: 1px solid rgba(255, 0, 0, 0.25);
+            border-radius: 14px;
+            flex-wrap: wrap;
+        }
+
+        .audio-player audio {
+            width: min(100%, 360px);
+        }
+
+        .audio-mute-btn {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid rgba(255, 0, 0, 0.4);
+            border-radius: 999px;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.4rem 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .audio-mute-btn:hover {
+            background: rgba(255, 0, 0, 0.35);
+            box-shadow: 0 0 18px rgba(255, 0, 0, 0.3);
+        }
+
         /* Responsive */
         @media (max-width: 600px) {
             .game-title {
@@ -542,6 +578,10 @@
                 font-size: 1rem;
                 padding: 0 0.5rem;
             }
+
+            .audio-player {
+                padding: 0.6rem 0.75rem;
+            }
         }
     </style>
 </head>
@@ -560,6 +600,16 @@
             <!-- Turn Indicator -->
             <div class="turn-indicator" id="turn-indicator">
                 🎮 Ton tour ! Choisis une attaque !
+            </div>
+
+            <div class="audio-player" aria-label="Lecteur audio du combat">
+                <audio id="battle-audio" controls playsinline preload="metadata">
+                    <source src="Musique/combat.m4a" type="audio/mp4">
+                    Ton navigateur ne supporte pas l'audio HTML5.
+                </audio>
+                <button class="audio-mute-btn" type="button" id="mute-toggle" aria-pressed="false">
+                    🔇 Mute
+                </button>
             </div>
 
             <!-- Fighters -->
@@ -909,6 +959,19 @@
 
         // Initialize
         updateHPBars();
+
+        const battleAudio = document.getElementById('battle-audio');
+        const muteToggle = document.getElementById('mute-toggle');
+
+        if (battleAudio && muteToggle) {
+            battleAudio.volume = 0.2;
+
+            muteToggle.addEventListener('click', () => {
+                battleAudio.muted = !battleAudio.muted;
+                muteToggle.setAttribute('aria-pressed', String(battleAudio.muted));
+                muteToggle.textContent = battleAudio.muted ? '🔊 Son' : '🔇 Mute';
+            });
+        }
     </script>
 </body>
 
