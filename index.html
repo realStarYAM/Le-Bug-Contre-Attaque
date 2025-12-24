@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Le Bug Contre-Attaque</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="no-scroll">
+  <!-- Splash Screen -->
+  <div id="splash" class="splash" aria-hidden="true">
+    <div class="splash-content">
+      <img src="logo/Acer.svg" alt="" class="splash-logo">
+      <h1 class="splash-title">Le Bug Contre-Attaque</h1>
+      <p class="splash-subtitle">SAISON 2 — Le Bug Contre-Attaque</p>
+      <div class="splash-loader">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="app">
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <img src="logo/Acer.svg" alt="Logo" class="app-logo">
+        <span class="app-title">Le Bug Contre-Attaque</span>
+      </div>
+      <div class="top-bar-right">
+        <button id="theme-toggle" class="btn-icon" aria-label="Changer de thème">
+          <svg id="icon-sun" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5" />
+            <path
+              d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+          </svg>
+          <svg id="icon-moon" class="icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+          </svg>
+        </button>
+        <button id="nav-profile" class="btn-icon" aria-label="Profil">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- HOME TAB -->
+      <section id="tab-home" class="tab-content active">
+        <div class="section-header">
+          <h1 class="section-title">Quel chapitre tu veux lire ?</h1>
+        </div>
+
+        <div class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8" />
+            <path d="M21 21l-4.35-4.35" />
+          </svg>
+          <input type="text" id="search-input" class="search-input" placeholder="Rechercher un chapitre...">
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-header">
+            <h2 class="section-subtitle">Chapitres populaires</h2>
+            <span class="view-all">Voir tout</span>
+          </div>
+          <div id="popular-chapters" class="horizontal-scroll">
+            <!-- Chapitres populaires (cartes horizontales) -->
+          </div>
+        </div>
+
+        <div class="section-block">
+          <h2 class="section-subtitle">Tous les chapitres</h2>
+          <div id="chapters-list" class="chapters-grid">
+            <!-- Liste des chapitres -->
+          </div>
+        </div>
+      </section>
+
+      <!-- CHAPTERS TAB -->
+      <section id="tab-chapters" class="tab-content">
+        <div class="section-header">
+          <h1 class="section-title">Chapitres</h1>
+        </div>
+        <div id="all-chapters-list" class="chapters-list-full">
+          <!-- Liste complète -->
+        </div>
+      </section>
+
+      <!-- READER TAB -->
+      <section id="tab-reader" class="tab-content">
+        <div class="reader-container">
+          <div class="book-cover-card">
+            <div class="book-cover-placeholder">
+              <span class="book-emoji">📖</span>
+            </div>
+            <div class="book-info">
+              <h2 id="reader-chapter-title" class="book-title">Chapitre 1</h2>
+              <p id="reader-page-indicator" class="book-page">Page 1 / 4</p>
+            </div>
+          </div>
+
+          <div class="reader-card">
+            <h3 id="reader-page-title" class="reader-page-title">Titre de la page</h3>
+            <div id="reader-content" class="reader-text">
+              <!-- Contenu de la page -->
+            </div>
+          </div>
+
+          <div class="reader-nav">
+            <button id="btn-prev" class="btn btn-secondary">
+              <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+              Précédent
+            </button>
+            <span id="page-counter" class="page-counter">1 / 4</span>
+            <button id="btn-next" class="btn btn-primary">
+              Suivant
+              <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROFILE TAB -->
+      <section id="tab-profile" class="tab-content">
+        <div class="profile-container">
+          <div class="profile-header-card">
+            <div class="profile-avatar">
+              <img src="logo/Acer.svg" alt="Avatar" class="avatar-img">
+            </div>
+            <h2 class="profile-name">Acer</h2>
+            <p class="profile-subtitle">Protagoniste malheureux</p>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-value" id="stat-chapters">0</span>
+              <span class="stat-label">Chapitres lus</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value" id="stat-pages">0</span>
+              <span class="stat-label">Pages lues</span>
+            </div>
+          </div>
+
+          <button id="btn-continue" class="btn btn-primary btn-block">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3" />
+            </svg>
+            Continuer la lecture
+          </button>
+
+          <div class="settings-card">
+            <h3 class="settings-title">Paramètres</h3>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <path
+                    d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                </svg>
+                <span>Langue</span>
+              </div>
+              <span class="setting-value">Français</span>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                </svg>
+                <span>Mode sombre</span>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="dark-mode-toggle">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-tab="home">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+        <span>Home</span>
+      </button>
+      <button class="nav-item" data-tab="chapters">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+        </svg>
+        <span>Chapitres</span>
+      </button>
+      <button class="nav-item" data-tab="reader">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
+          <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
+        </svg>
+        <span>Lecture</span>
+      </button>
+      <button class="nav-item" data-tab="profile">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+        <span>Profil</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
