@@ -189,7 +189,8 @@ body {
 
 @media (max-width: 480px) {
   .top-bar-left {
-    gap: 4px;
+    gap: 0;
+    justify-content: center;
   }
 
   .top-bar-right {
@@ -197,12 +198,13 @@ body {
   }
 
   .app-logo {
-    width: 20px;
-    height: 20px;
+    display: none;
   }
 
   .app-title {
     font-size: 12px;
+    text-align: center;
+    width: 100%;
   }
 }
 
