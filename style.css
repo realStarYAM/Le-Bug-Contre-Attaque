@@ -155,15 +155,12 @@ body {
   gap: 8px;
   flex: 1;
   min-width: 0;
+  justify-content: center;
+  width: 100%;
 }
 
 .app-logo {
-  width: 26px;
-  height: 26px;
-  flex: 0 0 auto;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-  transition: transform var(--transition-spring);
+  display: none;
 }
 
 .app-logo:hover {
@@ -175,15 +172,19 @@ body {
 }
 
 .app-title {
-  font-size: clamp(0.85rem, 1.2vw, 1rem);
+  font-size: 0.9375rem;
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.3px;
   flex-grow: 1;
   min-width: 0;
-  line-height: 1.2;
-  white-space: nowrap !important;
+  line-height: 34px;
+  white-space: nowrap;
   overflow: visible;
+  text-align: center;
+  width: 100%;
+  display: block;
+  margin: 0;
 }
 
 @media (max-width: 1200px) {
