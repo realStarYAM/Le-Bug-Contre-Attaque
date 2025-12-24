@@ -187,6 +187,16 @@ body {
   text-overflow: ellipsis;
 }
 
+@media (max-width: 480px) {
+  .top-bar-left {
+    gap: 4px;
+  }
+
+  .app-title {
+    font-size: 0.8rem;
+  }
+}
+
 .top-bar-right {
   display: flex;
   align-items: center;
