@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>War of Brands ⚔️ - Acer vs Apple</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a0a 50%, #0a0a0a 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Scanlines effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 0, 0, 0.03) 2px,
+                    rgba(255, 0, 0, 0.03) 4px);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Back Button */
+        .back-btn {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1rem;
+            background: rgba(255, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-radius: 50px;
+            color: #ff4444;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 0, 0, 0.2);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* Main Container */
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+            padding-top: 4rem;
+        }
+
+        /* Title */
+        .game-title {
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff0000, #ff4444, #ff0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+            margin-bottom: 1.5rem;
+            animation: pulse-title 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-title {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Arena */
+        .arena {
+            background: linear-gradient(180deg, rgba(20, 5, 5, 0.9) 0%, rgba(10, 0, 0, 0.95) 100%);
+            border: 2px solid rgba(255, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow:
+                0 0 50px rgba(255, 0, 0, 0.1),
+                inset 0 0 100px rgba(255, 0, 0, 0.05);
+        }
+
+        /* Fighters */
+        .fighters {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .fighter {
+            flex: 1;
+            text-align: center;
+        }
+
+        .fighter-card {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .fighter.player .fighter-card {
+            border-color: rgba(0, 255, 100, 0.3);
+            box-shadow: 0 0 20px rgba(0, 255, 100, 0.1);
+        }
+
+        .fighter.enemy .fighter-card {
+            border-color: rgba(255, 0, 0, 0.3);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.1);
+        }
+
+        .fighter-emoji {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .fighter.attacking .fighter-emoji {
+            animation: attack 0.5s ease-in-out;
+        }
+
+        .fighter.hurt .fighter-emoji {
+            animation: hurt 0.5s ease-in-out;
+        }
+
+        @keyframes attack {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(30px) scale(1.2);
+            }
+        }
+
+        @keyframes hurt {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-10px);
+            }
+
+            50% {
+                transform: translateX(10px);
+                filter: brightness(2);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+        }
+
+        .fighter-name {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .player .fighter-name {
+            color: #00ff64;
+        }
+
+        .enemy .fighter-name {
+            color: #ff4444;
+        }
+
+        /* HP Bar */
+        .hp-container {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 0.5rem;
+        }
+
+        .hp-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            margin-bottom: 0.3rem;
+            color: #aaa;
+        }
+
+        .hp-bar {
+            height: 12px;
+            background: rgba(50, 50, 50, 0.8);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .hp-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.5s ease-out;
+            position: relative;
+        }
+
+        .player .hp-fill {
+            background: linear-gradient(90deg, #00ff64, #00cc50);
+            box-shadow: 0 0 10px rgba(0, 255, 100, 0.5);
+        }
+
+        .enemy .hp-fill {
+            background: linear-gradient(90deg, #ff4444, #cc0000);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .hp-fill.low {
+            background: linear-gradient(90deg, #ff6600, #ff3300);
+            animation: hp-pulse 0.5s ease-in-out infinite;
+        }
+
+        @keyframes hp-pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        /* Battle Log */
+        .battle-log {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            min-height: 100px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-entry.player-action {
+            color: #00ff64;
+        }
+
+        .log-entry.enemy-action {
+            color: #ff4444;
+        }
+
+        .log-entry.system {
+            color: #ffcc00;
+        }
+
+        .log-entry.critical {
+            color: #ff00ff;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Attack Buttons */
+        .attacks {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.8rem;
+        }
+
+        .attack-btn {
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(100, 0, 0, 0.3));
+            border: 2px solid rgba(255, 0, 0, 0.4);
+            border-radius: 12px;
+            padding: 1rem 0.5rem;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .attack-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.4), rgba(150, 0, 0, 0.5));
+            border-color: rgba(255, 0, 0, 0.8);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .attack-btn:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
+        .attack-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(0.5);
+        }
+
+        .attack-icon {
+            font-size: 1.5rem;
+        }
+
+        .attack-name {
+            font-size: 0.75rem;
+            text-align: center;
+        }
+
+        .attack-damage {
+            font-size: 0.65rem;
+            color: #ff6666;
+        }
+
+        /* VS Divider */
+        .vs-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #ff0000;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+            padding: 0 1rem;
+        }
+
+        /* Game Over Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 500;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: linear-gradient(135deg, #1a0a0a, #0a0a0a);
+            border: 2px solid rgba(255, 0, 0, 0.5);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            max-width: 400px;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.3);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-emoji {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .modal-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+
+        .modal-title.victory {
+            color: #00ff64;
+        }
+
+        .modal-title.defeat {
+            color: #ff4444;
+        }
+
+        .modal-text {
+            color: #aaa;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            border: none;
+            border-radius: 50px;
+            padding: 0.8rem 2rem;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+        }
+
+        /* Damage popup */
+        .damage-popup {
+            position: absolute;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: #ff0000;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+            animation: damageFloat 1s ease-out forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        @keyframes damageFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-50px) scale(1.5);
+            }
+        }
+
+        /* Turn indicator */
+        .turn-indicator {
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: #ffcc00;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: rgba(255, 204, 0, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 204, 0, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .game-title {
+                font-size: 1.5rem;
+            }
+
+            .fighter-emoji {
+                font-size: 3rem;
+            }
+
+            .attacks {
+                grid-template-columns: 1fr;
+            }
+
+            .attack-btn {
+                flex-direction: row;
+                justify-content: center;
+                padding: 0.8rem 1rem;
+            }
+
+            .vs-divider {
+                font-size: 1rem;
+                padding: 0 0.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Back Button -->
+    <a href="index.html" class="back-btn">
+        <span>🏠</span>
+        <span>Retour QG</span>
+    </a>
+
+    <div class="game-container">
+        <h1 class="game-title">⚔️ WAR OF BRANDS ⚔️</h1>
+
+        <div class="arena">
+            <!-- Turn Indicator -->
+            <div class="turn-indicator" id="turn-indicator">
+                🎮 Ton tour ! Choisis une attaque !
+            </div>
+
+            <!-- Fighters -->
+            <div class="fighters">
+                <!-- Player: Acer -->
+                <div class="fighter player" id="player">
+                    <div class="fighter-card">
+                        <span class="fighter-emoji">💻</span>
+                        <div class="fighter-name">ACER</div>
+                        <div class="hp-container">
+                            <div class="hp-label">
+                                <span>HP</span>
+                                <span id="player-hp-text">100/100</span>
+                            </div>
+                            <div class="hp-bar">
+                                <div class="hp-fill" id="player-hp" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vs-divider">VS</div>
+
+                <!-- Enemy: Apple -->
+                <div class="fighter enemy" id="enemy">
+                    <div class="fighter-card">
+                        <span class="fighter-emoji">🍎</span>
+                        <div class="fighter-name">APPLE</div>
+                        <div class="hp-container">
+                            <div class="hp-label">
+                                <span>HP</span>
+                                <span id="enemy-hp-text">150/150</span>
+                            </div>
+                            <div class="hp-bar">
+                                <div class="hp-fill" id="enemy-hp" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Battle Log -->
+            <div class="battle-log" id="battle-log">
+                <div class="log-entry system">⚔️ Le combat commence ! Apple te regarde avec mépris...</div>
+            </div>
+
+            <!-- Attack Buttons -->
+            <div class="attacks" id="attacks">
+                <button class="attack-btn" onclick="attack('ecran_bleu')">
+                    <span class="attack-icon">💀</span>
+                    <span class="attack-name">Écran Bleu de la Mort</span>
+                    <span class="attack-damage">20-35 DMG</span>
+                </button>
+                <button class="attack-btn" onclick="attack('surchauffe')">
+                    <span class="attack-icon">🔥</span>
+                    <span class="attack-name">Surchauffe Nucléaire</span>
+                    <span class="attack-damage">40-60 DMG (risqué!)</span>
+                </button>
+                <button class="attack-btn" onclick="attack('plastique')">
+                    <span class="attack-icon">🛡️</span>
+                    <span class="attack-name">Plastique Cheap</span>
+                    <span class="attack-damage">10-15 DMG (rapide)</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <div class="modal-emoji" id="modal-emoji">🏆</div>
+            <h2 class="modal-title" id="modal-title">VICTOIRE !</h2>
+            <p class="modal-text" id="modal-text">Tu as vaincu Apple !</p>
+            <button class="modal-btn" onclick="restartGame()">🔄 REVANCHE</button>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        const gameState = {
+            playerHP: 100,
+            playerMaxHP: 100,
+            enemyHP: 150,
+            enemyMaxHP: 150,
+            isPlayerTurn: true,
+            gameOver: false
+        };
+
+        // Attacks
+        const attacks = {
+            ecran_bleu: {
+                name: "Écran Bleu de la Mort",
+                minDamage: 20,
+                maxDamage: 35,
+                messages: [
+                    "💀 BSOD activé ! Windows a crashé dans l'âme d'Apple !",
+                    "💀 Erreur critique ! Apple ne sait pas gérer ça !",
+                    "💀 STOP 0x000000D1 ! C'est super efficace !",
+                    "💀 Blue Screen envoyé ! Apple.exe a cessé de fonctionner !"
+                ]
+            },
+            surchauffe: {
+                name: "Surchauffe Nucléaire",
+                minDamage: 40,
+                maxDamage: 60,
+                selfDamage: { min: 5, max: 15 },
+                messages: [
+                    "🔥 VENTILATEUR À 10000 RPM ! Ça brûle tout !",
+                    "🔥 TEMPÉRATURE CRITIQUE ! Mais quel carnage !",
+                    "🔥 Le PC devient un réacteur nucléaire !",
+                    "🔥 Thermal Throttling ? Jamais entendu parler !"
+                ]
+            },
+            plastique: {
+                name: "Plastique Cheap",
+                minDamage: 10,
+                maxDamage: 15,
+                messages: [
+                    "🛡️ Coque en plastique recyclé ! Économique ET efficace !",
+                    "🛡️ Design 'budget friendly' en pleine face !",
+                    "🛡️ C'est pas cher, mais ça fait mal quand même !",
+                    "🛡️ Made in 'on fait ce qu'on peut' !"
+                ]
+            }
+        };
+
+        // Apple's snobby quotes
+        const appleQuotes = [
+            "🍎 'Ton câble est trop court... comme ta vision du design.'",
+            "🍎 'Achète un dongle à 79€, ça t'aidera peut-être.'",
+            "🍎 'Notre écosystème est FERMÉ. Comme mon cœur envers toi.'",
+            "🍎 'C'est un PC ou une calculatrice ? Je confonds.'",
+            "🍎 'Innovation ? Tu connais pas ce mot.'",
+            "🍎 'Mon MacBook coûte 3 de tes laptops. Quality over quantity.'",
+            "🍎 'Retina Display envoie ses condoléances à ton écran.'",
+            "🍎 'MagSafe te fait coucou depuis 2006. T'es en retard.'",
+            "🍎 'Touch Bar > Tout ce que t'as jamais créé.'",
+            "🍎 'M1 chip dit bonjour. Ton Intel dit au revoir.'",
+            "🍎 'Design by Apple in California. Design by toi dans un garage.'",
+            "🍎 'Notre logo est une pomme. Le tien c'est... quoi exactement ?'"
+        ];
+
+        // Apple's attack names
+        const appleAttacks = [
+            { name: "Mépris Premium", emoji: "👑", minDmg: 15, maxDmg: 25 },
+            { name: "Taxe Apple", emoji: "💰", minDmg: 20, maxDmg: 30 },
+            { name: "Obsolescence Programmée", emoji: "📉", minDmg: 25, maxDmg: 35 },
+            { name: "Regard Condescendant", emoji: "😏", minDmg: 10, maxDmg: 20 }
+        ];
+
+        // Utility functions
+        function randomBetween(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function randomChoice(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
+        function updateHPBars() {
+            const playerHP = document.getElementById('player-hp');
+            const playerHPText = document.getElementById('player-hp-text');
+            const enemyHP = document.getElementById('enemy-hp');
+            const enemyHPText = document.getElementById('enemy-hp-text');
+
+            const playerPercent = (gameState.playerHP / gameState.playerMaxHP) * 100;
+            const enemyPercent = (gameState.enemyHP / gameState.enemyMaxHP) * 100;
+
+            playerHP.style.width = playerPercent + '%';
+            playerHPText.textContent = `${Math.max(0, gameState.playerHP)}/${gameState.playerMaxHP}`;
+
+            enemyHP.style.width = enemyPercent + '%';
+            enemyHPText.textContent = `${Math.max(0, gameState.enemyHP)}/${gameState.enemyMaxHP}`;
+
+            // Low HP warning
+            if (playerPercent <= 30) {
+                playerHP.classList.add('low');
+            } else {
+                playerHP.classList.remove('low');
+            }
+
+            if (enemyPercent <= 30) {
+                enemyHP.classList.add('low');
+            } else {
+                enemyHP.classList.remove('low');
+            }
+        }
+
+        function addLog(message, type = '') {
+            const log = document.getElementById('battle-log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = message;
+            log.insertBefore(entry, log.firstChild);
+
+            // Keep log manageable
+            while (log.children.length > 20) {
+                log.removeChild(log.lastChild);
+            }
+        }
+
+        function showDamage(targetId, damage) {
+            const target = document.getElementById(targetId);
+            const popup = document.createElement('div');
+            popup.className = 'damage-popup';
+            popup.textContent = `-${damage}`;
+            popup.style.left = '50%';
+            popup.style.top = '30%';
+            target.querySelector('.fighter-card').appendChild(popup);
+
+            setTimeout(() => popup.remove(), 1000);
+        }
+
+        function triggerAnimation(elementId, animClass) {
+            const element = document.getElementById(elementId);
+            element.classList.add(animClass);
+            setTimeout(() => element.classList.remove(animClass), 500);
+        }
+
+        function setButtonsEnabled(enabled) {
+            const buttons = document.querySelectorAll('.attack-btn');
+            buttons.forEach(btn => btn.disabled = !enabled);
+        }
+
+        function updateTurnIndicator(text) {
+            document.getElementById('turn-indicator').textContent = text;
+        }
+
+        function checkGameOver() {
+            if (gameState.enemyHP <= 0) {
+                gameState.gameOver = true;
+                showModal('victory');
+                return true;
+            }
+            if (gameState.playerHP <= 0) {
+                gameState.gameOver = true;
+                showModal('defeat');
+                return true;
+            }
+            return false;
+        }
+
+        function showModal(result) {
+            const overlay = document.getElementById('modal-overlay');
+            const emoji = document.getElementById('modal-emoji');
+            const title = document.getElementById('modal-title');
+            const text = document.getElementById('modal-text');
+
+            if (result === 'victory') {
+                emoji.textContent = '🏆';
+                title.textContent = 'VICTOIRE !';
+                title.className = 'modal-title victory';
+                text.textContent = 'Tu as prouvé que le budget peut battre le premium ! Acer règne suprême !';
+            } else {
+                emoji.textContent = '💀';
+                title.textContent = 'DÉFAITE...';
+                title.className = 'modal-title defeat';
+                text.textContent = 'Apple a écrasé tes rêves avec son écosystème fermé... Mais tu peux réessayer !';
+            }
+
+            overlay.classList.add('active');
+            setButtonsEnabled(false);
+        }
+
+        function restartGame() {
+            gameState.playerHP = gameState.playerMaxHP;
+            gameState.enemyHP = gameState.enemyMaxHP;
+            gameState.isPlayerTurn = true;
+            gameState.gameOver = false;
+
+            updateHPBars();
+            document.getElementById('modal-overlay').classList.remove('active');
+            document.getElementById('battle-log').innerHTML = '<div class="log-entry system">⚔️ ROUND 2 ! Apple ricane... mais tu es prêt !</div>';
+            setButtonsEnabled(true);
+            updateTurnIndicator('🎮 Ton tour ! Choisis une attaque !');
+        }
+
+        // Main attack function
+        function attack(attackType) {
+            if (!gameState.isPlayerTurn || gameState.gameOver) return;
+
+            const attackData = attacks[attackType];
+            const damage = randomBetween(attackData.minDamage, attackData.maxDamage);
+
+            // Player attacks
+            setButtonsEnabled(false);
+            gameState.isPlayerTurn = false;
+
+            triggerAnimation('player', 'attacking');
+
+            setTimeout(() => {
+                gameState.enemyHP -= damage;
+                triggerAnimation('enemy', 'hurt');
+                showDamage('enemy', damage);
+                updateHPBars();
+                addLog(randomChoice(attackData.messages) + ` (-${damage} HP)`, 'player-action');
+
+                // Self-damage for Surchauffe
+                if (attackType === 'surchauffe') {
+                    const selfDmg = randomBetween(attackData.selfDamage.min, attackData.selfDamage.max);
+                    gameState.playerHP -= selfDmg;
+                    updateHPBars();
+                    addLog(`🔥 Dégâts de surchauffe sur toi ! (-${selfDmg} HP)`, 'critical');
+                }
+
+                // Check if enemy is dead
+                if (checkGameOver()) return;
+
+                // Enemy turn
+                updateTurnIndicator('😈 Tour d\'Apple...');
+
+                setTimeout(() => {
+                    enemyAttack();
+                }, 1500);
+
+            }, 500);
+        }
+
+        function enemyAttack() {
+            const attackChoice = randomChoice(appleAttacks);
+            const damage = randomBetween(attackChoice.minDmg, attackChoice.maxDmg);
+
+            triggerAnimation('enemy', 'attacking');
+
+            setTimeout(() => {
+                gameState.playerHP -= damage;
+                triggerAnimation('player', 'hurt');
+                showDamage('player', damage);
+                updateHPBars();
+
+                // Log attack
+                addLog(`${attackChoice.emoji} Apple utilise ${attackChoice.name} ! (-${damage} HP)`, 'enemy-action');
+
+                // Snobby quote
+                addLog(randomChoice(appleQuotes), 'enemy-action');
+
+                // Check if player is dead
+                if (checkGameOver()) return;
+
+                // Back to player's turn
+                gameState.isPlayerTurn = true;
+                setButtonsEnabled(true);
+                updateTurnIndicator('🎮 Ton tour ! Choisis une attaque !');
+
+            }, 500);
+        }
+
+        // Initialize
+        updateHPBars();
+    </script>
+</body>
+
+</html>
