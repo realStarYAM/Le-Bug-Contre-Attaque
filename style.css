@@ -190,10 +190,20 @@ body {
 @media (max-width: 480px) {
   .top-bar-left {
     gap: 4px;
+    justify-content: center;
+  }
+
+  .top-bar-right {
+    gap: 4px;
+  }
+
+  .app-logo {
+    display: none;
   }
 
   .app-title {
-    font-size: 0.8rem;
+    font-size: 12px;
+    text-align: center;
   }
 }
 
