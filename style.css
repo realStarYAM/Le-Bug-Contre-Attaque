@@ -182,11 +182,11 @@ body {
   flex-grow: 1;
   min-width: 0;
   line-height: 1.2;
-  white-space: normal;
+  white-space: nowrap !important;
   overflow: visible;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 1200px) {
   .top-bar-left {
     gap: 6px;
   }
@@ -201,7 +201,7 @@ body {
 
   .app-title {
     font-size: 0.85rem;
-    text-align: left;
+    text-align: center;
   }
 }
 
