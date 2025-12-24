@@ -192,8 +192,17 @@ body {
     gap: 4px;
   }
 
+  .top-bar-right {
+    gap: 4px;
+  }
+
+  .app-logo {
+    width: 20px;
+    height: 20px;
+  }
+
   .app-title {
-    font-size: 0.8rem;
+    font-size: 12px;
   }
 }
 
