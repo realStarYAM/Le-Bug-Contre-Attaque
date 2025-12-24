@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'Amour des Marques - 💻❤️</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            min-height: 100vh;
+        }
+
+        .card {
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform-style: preserve-3d;
+        }
+
+        .card.swiping-left {
+            transform: translateX(-150%) rotate(-30deg);
+            opacity: 0;
+        }
+
+        .card.swiping-right {
+            transform: translateX(150%) rotate(30deg);
+            opacity: 0;
+        }
+
+        .card.entering {
+            animation: cardEnter 0.5s ease-out forwards;
+        }
+
+        @keyframes cardEnter {
+            from {
+                transform: scale(0.8) translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .btn-action {
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-action:hover {
+            transform: scale(1.15);
+        }
+
+        .btn-action:active {
+            transform: scale(0.95);
+        }
+
+        .btn-nope:hover {
+            box-shadow: 0 8px 35px rgba(255, 59, 48, 0.5);
+        }
+
+        .btn-like:hover {
+            box-shadow: 0 8px 35px rgba(52, 211, 153, 0.5);
+        }
+
+        .modal {
+            animation: modalPop 0.3s ease-out forwards;
+        }
+
+        @keyframes modalPop {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .typing-text {
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typing 1s steps(40) forwards;
+        }
+
+        @keyframes typing {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 100%;
+            }
+        }
+
+        .match-animation {
+            animation: matchPulse 0.6s ease-in-out;
+        }
+
+        @keyframes matchPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        .heart-float {
+            position: absolute;
+            animation: floatUp 1s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes floatUp {
+            to {
+                transform: translateY(-100px) rotate(20deg);
+                opacity: 0;
+            }
+        }
+
+        .packard-glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 20px #f472b6, 0 0 40px #f472b6;
+            }
+
+            to {
+                box-shadow: 0 0 40px #a855f7, 0 0 80px #a855f7;
+            }
+        }
+
+        .gradient-border {
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            padding: 3px;
+            border-radius: 20px;
+        }
+
+        .profile-card {
+            background: linear-gradient(180deg, #2d2d44 0%, #1a1a2e 100%);
+        }
+
+        .sticker {
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+
+<body class="flex items-center justify-center p-4">
+    <!-- Bouton Retour -->
+    <a href="index.html"
+        class="fixed top-4 left-4 z-50 flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-gray-300 hover:bg-white/20 hover:text-white transition-all duration-300 text-sm font-medium shadow-lg">
+        <span>🏠</span>
+        <span>Retour</span>
+    </a>
+
+    <div id="app" class="w-full max-w-md">
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <h1
+                class="text-3xl font-bold bg-gradient-to-r from-pink-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                L'Amour des Marques 💕
+            </h1>
+            <p class="text-gray-400 text-sm mt-1">Tu joues: <span class="text-pink-400 font-bold">Acer</span> (1976)</p>
+            <div class="flex justify-center items-center gap-2 mt-2">
+                <span class="text-2xl">🖥️</span>
+                <span class="text-yellow-400 font-semibold">Profils vus: <span id="counter">0</span>/6</span>
+            </div>
+        </header>
+
+        <!-- Card Container -->
+        <div id="card-container" class="relative h-[480px] mb-6">
+            <!-- Cards will be inserted here -->
+        </div>
+
+        <!-- Action Buttons -->
+        <div id="action-buttons" class="flex justify-center gap-6">
+            <button onclick="swipeLeft()"
+                class="btn-action btn-nope w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-3xl cursor-pointer">
+                ❌
+            </button>
+            <button onclick="superLike()"
+                class="btn-action w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center text-xl cursor-pointer">
+                ⭐
+            </button>
+            <button onclick="swipeRight()"
+                class="btn-action btn-like w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-500 flex items-center justify-center text-3xl cursor-pointer">
+                💚
+            </button>
+        </div>
+
+        <!-- Message area -->
+        <div id="message-area" class="text-center mt-6 text-gray-400 text-sm italic h-6">
+            Glisse ou clique pour choisir...
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal-overlay"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div id="modal"
+            class="modal bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl p-6 max-w-sm w-full text-center border border-pink-500/30">
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <script>
+        const profiles = [
+            {
+                name: "Apple",
+                emoji: "🍎",
+                age: 48,
+                bio: "Cherche quelqu'un qui comprend ce que veut dire 'Premium'. 💎 Si tu n'as pas un logo fruité, passe ton chemin.",
+                rejections: [
+                    "Désolé, je ne sors qu'avec du Premium. Toi t'es plus catégorie 'soldes' 🤷‍♀️",
+                    "Acer ? C'est pas cette marque qu'on trouve dans les supermarchés ? 😬",
+                    "Notre écosystème est fermé. Et toi, t'es dehors. 🚪",
+                    "Mon designer a vomi en voyant ton logo. Désolé. 🤮"
+                ],
+                isPackard: false
+            },
+            {
+                name: "Samsung",
+                emoji: "📱",
+                age: 85,
+                bio: "Leader mondial et fier de l'être ! 🌍 Cherche quelqu'un qui peut suivre mon rythme... et mon budget.",
+                rejections: [
+                    "T'es gentil Acer, mais je suis dans une autre ligue. Samsung Galaxy League ⭐",
+                    "On t'appelle pas 'Budget King' pour rien... chez moi on dit 'Non' 🔴",
+                    "J'ai déjà des amis low-cost, c'est suffisant. 👋",
+                    "Ta pub 'Explore Beyond Limits' ? J'ai préféré ton silence 🤫"
+                ]
+            },
+            {
+                name: "Asus",
+                emoji: "🦅",
+                age: 39,
+                bio: "In search of incredible... et d'un partenaire qui ne soit pas une copie de moi ! ROG forever 🎮",
+                rejections: [
+                    "On se ressemble trop, c'est gênant. C'est comme dater son cousin 😰",
+                    "T'es juste ma version budget. Ça marche pas pour un relationship. 💔",
+                    "Republic of Gamers ne sort pas avec... Republic of Budget 😅",
+                    "T'es l'Aldi à mon Lidl. Pas de place pour deux. 🛒"
+                ]
+            },
+            {
+                name: "LDLC",
+                emoji: "🎧",
+                age: 26,
+                bio: "Tech & Gaming ! 🎮 Cherche un(e) partenaire qui aime les config à 4000€. Les radins, swipez left !",
+                rejections: [
+                    "Mais t'es une marque, pas un e-commerce... On est pas dans la même catégorie 📦",
+                    "Nous on vend des Acer, on ne les date pas. Business before pleasure 💼",
+                    "Trop weird. On va blocker ton numéro commercial 📵",
+                    "Désolé, je cherche quelqu'un avec plus de... valeur marchande 📉"
+                ]
+            },
+            {
+                name: "TopAchat",
+                emoji: "🏷️",
+                age: 23,
+                bio: "Les meilleurs prix du web ! 💰 Cherche l'amour... mais pas au prix fort (c'est ironique haha)",
+                rejections: [
+                    "Euh... on est concurrents ? Amis ? Ennemis ? Je suis perdu 😵",
+                    "TopAchat c'est pour trouver des bons plans, pas des problèmes 💳",
+                    "Notre slogan 'Expert du High-Tech' s'applique pas au dating, désolé 🙅",
+                    "T'es comme un produit qu'on vendrait... avec 5 étoiles sur 20 ⭐⭐⭐⭐⭐/20"
+                ]
+            },
+            {
+                name: "Packard Bell",
+                emoji: "🔔",
+                age: 37,
+                bio: "Marque légendaire des années 2000 ! 🔔 Cherche quelqu'un qui se souvient de moi... quelqu'un... s'il vous plaît ? 🥺",
+                rejections: [],
+                isPackard: true
+            }
+        ];
+
+        let currentIndex = 0;
+        let viewedCount = 0;
+        const dialogues = [
+            "Salut ! Je m'appelle Acer, on pourrait faire connaissance ? 💻",
+            "J'ai des laptops pas chers et... attends, reviens ! 😰",
+            "Bon ok je suis pas Apple mais j'ai du charme quand même ? 🥺",
+            "On pourrait faire un duo de PC pas chers ensemble ? 💑"
+        ];
+
+        function createCard(profile, index) {
+            const isPackard = profile.isPackard;
+            const borderClass = isPackard ? 'gradient-border packard-glow' : 'gradient-border';
+
+            return `
+                <div class="card ${borderClass} absolute inset-0 ${index === 0 ? '' : 'hidden'}" data-index="${index}">
+                    <div class="profile-card rounded-[17px] h-full p-4 flex flex-col">
+                        <!-- Profile Header -->
+                        <div class="flex-1 flex flex-col items-center justify-center text-center">
+                            <div class="w-32 h-32 rounded-full bg-gradient-to-br from-pink-500/20 to-purple-500/20 flex items-center justify-center mb-4 ${isPackard ? 'packard-glow' : ''}">
+                                <span class="text-6xl ${isPackard ? 'sticker' : ''}">${profile.emoji}</span>
+                            </div>
+                            <h2 class="text-2xl font-bold text-white mb-1">${profile.name}</h2>
+                            <p class="text-pink-400 font-semibold">${profile.age} ans</p>
+                            <div class="mt-4 px-4">
+                                <p class="text-gray-300 text-sm leading-relaxed">"${profile.bio}"</p>
+                            </div>
+                            ${isPackard ? '<p class="text-yellow-400 text-xs mt-2 animate-pulse">✨ COMPATIBILITÉ : 100% ✨</p>' : ''}
+                        </div>
+                        
+                        <!-- Action hints -->
+                        <div class="flex justify-center gap-8 text-xs text-gray-500">
+                            <span>❌ Passer</span>
+                            <span>💚 Like</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCards() {
+            const container = document.getElementById('card-container');
+            container.innerHTML = profiles.slice(currentIndex).map((p, i) => createCard(p, i)).join('');
+        }
+
+        function updateCounter() {
+            document.getElementById('counter').textContent = viewedCount;
+        }
+
+        function showMessage(msg) {
+            document.getElementById('message-area').textContent = msg;
+        }
+
+        function createHearts() {
+            const container = document.getElementById('card-container');
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('span');
+                    heart.className = 'heart-float text-2xl';
+                    heart.textContent = ['💚', '💕', '💖', '💗', '❤️'][Math.floor(Math.random() * 5)];
+                    heart.style.left = `${40 + Math.random() * 20}%`;
+                    heart.style.bottom = '20%';
+                    container.appendChild(heart);
+                    setTimeout(() => heart.remove(), 1000);
+                }, i * 100);
+            }
+        }
+
+        function swipeLeft() {
+            const card = document.querySelector(`.card[data-index="0"]`);
+            if (!card) return;
+
+            card.classList.add('swiping-left');
+            showMessage("😢 Peut-être une prochaine fois...");
+
+            setTimeout(() => {
+                currentIndex++;
+                viewedCount++;
+                updateCounter();
+                renderCards();
+                showMessage("Glisse ou clique pour choisir...");
+            }, 500);
+        }
+
+        function swipeRight() {
+            const card = document.querySelector(`.card[data-index="0"]`);
+            if (!card) return;
+
+            const profile = profiles[currentIndex];
+
+            if (profile.isPackard) {
+                // Packard Bell MATCH!
+                card.classList.add('match-animation');
+                createHearts();
+                showMessage("💚 C'EST UN MATCH !!!");
+
+                setTimeout(() => {
+                    showPackardMatch();
+                }, 600);
+            } else {
+                // Rejection!
+                card.classList.add('swiping-right');
+                const rejection = profile.rejections[Math.floor(Math.random() * profile.rejections.length)];
+
+                setTimeout(() => {
+                    showRejection(profile, rejection);
+                }, 300);
+            }
+        }
+
+        function superLike() {
+            const card = document.querySelector(`.card[data-index="0"]`);
+            if (!card) return;
+
+            const profile = profiles[currentIndex];
+
+            if (profile.isPackard) {
+                swipeRight();
+            } else {
+                card.classList.add('swiping-right');
+                createHearts();
+
+                setTimeout(() => {
+                    showRejection(profile, `⭐ Super-like reçu ! ${profile.rejections[Math.floor(Math.random() * profile.rejections.length)]}`);
+                }, 300);
+            }
+        }
+
+        function showRejection(profile, message) {
+            const overlay = document.getElementById('modal-overlay');
+            const content = document.getElementById('modal-content');
+
+            content.innerHTML = `
+                <div class="text-5xl mb-4">${profile.emoji}</div>
+                <h3 class="text-xl font-bold text-red-400 mb-3">💔 REJETÉ 💔</h3>
+                <p class="text-gray-300 mb-4">${profile.name} a répondu :</p>
+                <div class="bg-red-900/30 rounded-xl p-4 border border-red-500/30">
+                    <p class="text-white italic">"${message}"</p>
+                </div>
+                <button onclick="closeModal()" class="mt-6 px-8 py-3 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full text-white font-semibold hover:opacity-90 transition cursor-pointer">
+                    Continuer ma recherche... 😢
+                </button>
+            `;
+
+            overlay.classList.remove('hidden');
+        }
+
+        function showPackardMatch() {
+            const overlay = document.getElementById('modal-overlay');
+            const content = document.getElementById('modal-content');
+
+            content.innerHTML = `
+                <div class="text-6xl mb-2 sticker">🔔💕🖥️</div>
+                <h3 class="text-2xl font-bold text-emerald-400 mb-2">C'EST UN MATCH !</h3>
+                <p class="text-pink-400 font-semibold mb-4">Packard Bell t'aliké !</p>
+                <div class="bg-purple-900/30 rounded-xl p-4 border border-purple-500/30 mb-4">
+                    <p class="text-white text-lg font-semibold">Packard Bell :</p>
+                    <p class="text-gray-300 mt-2">"Enfin ! Quelqu'un qui me voit ! 🥺 On sera les rois du budget ! Personne ne pourra nous arrêter ! 🔔💪"</p>
+                </div>
+                <div class="text-left bg-pink-900/20 rounded-xl p-3 mb-4">
+                    <p class="text-pink-300 text-sm">💬 <strong> Packard Bell</strong> a envoyé 47 messages...</p>
+                    <p class="text-gray-400 text-xs mt-1">"Salut""T là ?""Réponds""On se voit ?""Je t'aime""Marry me ?"</p>
+                </div>
+                <p class="text-yellow-400 text-sm mb-4">⚠️ Packard Bell est maintenant ton ami(e) pour la vie. Il n'y a pas d'option pour se désabonner.</p>
+                <button onclick="restartGame()" class="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full text-white font-semibold hover:opacity-90 transition cursor-pointer">
+                    💚 Accepter mon destin
+                </button>
+            `;
+
+            overlay.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.add('hidden');
+            currentIndex++;
+            viewedCount++;
+            updateCounter();
+            renderCards();
+            showMessage("Glisse ou clique pour choisir...");
+        }
+
+        function restartGame() {
+            currentIndex = 0;
+            viewedCount = 0;
+            updateCounter();
+            renderCards();
+            document.getElementById('modal-overlay').classList.add('hidden');
+            showMessage("Nouvelle recherche de l'amour... 🔄");
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') swipeLeft();
+            if (e.key === 'ArrowRight') swipeRight();
+            if (e.key === 'ArrowUp') superLike();
+        });
+
+        // Touch/Swipe support
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        document.getElementById('card-container').addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        });
+
+        document.getElementById('card-container').addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const diffX = touchStartX - touchEndX;
+            const diffY = touchStartY - touchEndY;
+
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                if (diffX > 0) swipeLeft();
+                else swipeRight();
+            }
+        });
+
+        // Initialize
+        renderCards();
+    </script>
+</body>
+
+</html>
