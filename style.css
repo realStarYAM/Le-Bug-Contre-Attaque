@@ -39,7 +39,7 @@
   --radius-xl: 26px;
 
   --nav-height: 84px;
-  --topbar-height: 56px;
+  --topbar-height: 72px;
 
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
 
@@ -136,12 +136,13 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: var(--topbar-height);
+  min-height: var(--topbar-height);
+  height: auto;
   background: var(--glass-bg);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px;
+  padding: 10px 16px;
   z-index: 100;
   border-bottom: 0.5px solid var(--border);
   backdrop-filter: blur(var(--blur-amount)) saturate(180%);
@@ -151,10 +152,9 @@ body {
 .top-bar-left {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex: 1;
   min-width: 0;
-  overflow: hidden;
 }
 
 .app-logo {
@@ -175,22 +175,20 @@ body {
 }
 
 .app-title {
-  font-size: 0.82rem;
+  font-size: clamp(0.85rem, 1.2vw, 1rem);
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.3px;
-  flex: 1;
+  flex-grow: 1;
   min-width: 0;
-  line-height: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.2;
+  white-space: normal;
+  overflow: visible;
 }
 
 @media (max-width: 480px) {
   .top-bar-left {
-    gap: 0;
-    justify-content: center;
+    gap: 6px;
   }
 
   .top-bar-right {
@@ -202,9 +200,8 @@ body {
   }
 
   .app-title {
-    font-size: 12px;
-    text-align: center;
-    width: 100%;
+    font-size: 0.85rem;
+    text-align: left;
   }
 }
 
